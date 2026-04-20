@@ -58,3 +58,21 @@ class AppFutbol(ctk.CTk):
             command=self.cambiar_posicion # Evento: Dispara la función de bloqueo/desbloqueo de goles dinámicamente.
         )
         self.combo_posicion.pack(pady=(0, 15), padx=20, fill="x")   
+        
+         # Goles, solo jugadores de campo. Por eso inicialmente lo dejamos bloqueado (state="disabled").
+        ctk.CTkLabel(self.frame_carga, text="Goles Marcados:", font=("Arial", 12)).pack(anchor="w", padx=25)
+        self.ent_goles = ctk.CTkEntry(self.frame_carga)  # Campo de entrada de texto para los goles.
+        self.ent_goles.pack(pady=(0, 25), padx=20, fill="x")
+        
+        # El parámetro 'command' enlaza el clic del botón con el método self.guardar_datos.
+        self.btn_guardar = ctk.CTkButton(self.frame_carga, text="GUARDAR JUGADOR", height=40, command=self.guardar_datos)
+        self.btn_guardar.pack(pady=10, padx=20, fill="x")
+
+        # --- PANEL DERECHO: CONSULTAS ---
+        self.frame_lista = ctk.CTkFrame(self) # Frame contenedor para separar visualmente la lista del formulario
+        self.frame_lista.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
+        
+        ctk.CTkLabel(self.frame_lista, text="PLANTEL ACTUAL", font=("Arial", 18, "bold")).pack(pady=15) # Título del panel de consultas
+        
+        self.txt_lista = ctk.CTkTextbox(self.frame_lista, font=("Courier New", 13))
+        self.txt_lista.pack(pady=10, padx=20, fill="both", expand=True)
