@@ -76,3 +76,30 @@ class AppFutbol(ctk.CTk):
         
         self.txt_lista = ctk.CTkTextbox(self.frame_lista, font=("Courier New", 13))
         self.txt_lista.pack(pady=10, padx=20, fill="both", expand=True)
+
+import customtkinter as ctk     
+from tkinter import messagebox
+from clases import Arquero, JugadorCampo
+
+ctk.set_appearance_mode("dark")  #se establece el modo oscuro
+ctk.set_default_color_theme("blue") #botones en Azul
+
+class AppFutbol(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+
+        self.title("Sistema de Estadísticas - Grupo 3 UNSADA")
+        self.geometry("950x750")
+        
+        self.equipo = []
+
+        # --- MENÚ PRINCIPAL CON PESTAÑAS ---
+        self.menu_tabs = ctk.CTkTabview(self)       #creamos el panel
+        self.menu_tabs.pack(fill="both", expand=True, padx=20, pady=20)
+
+        self.tab_carga = self.menu_tabs.add("Carga de Datos") #creamos la pestaña
+        self.tab_consultas = self.menu_tabs.add("Consultas") #creamos la pestaña
+
+        self.armar_pestana_carga()      #modula
+        self.armar_pestana_consultas()
+
