@@ -184,11 +184,12 @@ class AppFutbol(ctk.CTk):
     def validar_minutos_realtime(self, event):
         texto = self.ent_minutos.get().strip()
         if texto:
-            try: float(texto)
-            # Intentamos convertirlo a float (por si jugó medio tiempo, ej: 45.5).
+            try: 
+                # Intentamos convertirlo a float (por si jugó medio tiempo, ej: 45.5).
+                float(texto)
             except ValueError:
-            # Si Python tira error al convertir, es porque el usuario metió letras.  
-                  messagebox.showwarning("Error", "Los minutos deben ser numéricos.")
+                # Si Python tira error al convertir, es porque el usuario metió letras.  
+                messagebox.showwarning("Error", "Los minutos deben ser numéricos.")
                 self.ent_minutos.delete(0, 'end')
                 self.after(10, self.ent_minutos.focus)
 
