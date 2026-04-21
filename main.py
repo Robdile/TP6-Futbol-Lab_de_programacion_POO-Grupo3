@@ -14,7 +14,7 @@ class AppFutbol(ctk.CTk):
         
         self.equipo = []
 
-        # --- MENÚ PRINCIPAL CON PESTAÑAS (Juan) ---
+        # --- MENÚ PRINCIPAL CON PESTAÑAS ---
         self.menu_tabs = ctk.CTkTabview(self)
         self.menu_tabs.pack(fill="both", expand=True, padx=20, pady=20)
 
@@ -24,7 +24,7 @@ class AppFutbol(ctk.CTk):
         self.armar_pestana_carga()
         self.armar_pestana_consultas()
         
-        # Estado inicial seguro (Roberto/Juan)
+        # Estado inicial seguro 
         self.cambiar_posicion("ARQUERO")
 
     def armar_pestana_carga(self):
@@ -35,7 +35,7 @@ class AppFutbol(ctk.CTk):
         ctk.CTkLabel(marco, text="REGISTRO DE JUGADOR", font=("Arial", 18, "bold")).pack(pady=15)
 
         # ==========================================
-        # ZONA DE ENTRADA DE DATOS (Roberto)
+        # ZONA DE ENTRADA DE DATOS 
         # ==========================================
 
         # --- APELLIDO ---
@@ -65,7 +65,7 @@ class AppFutbol(ctk.CTk):
         self.combo_posicion.pack(pady=(0, 15), padx=20, fill="x")
 
         # ==========================================
-        # GOLES Y BOTÓN (Eros)
+        # GOLES Y BOTÓN 
         # ==========================================
         ctk.CTkLabel(marco, text="Goles Marcados:", font=("Arial", 12)).pack(anchor="w", padx=25)
         self.ent_goles = ctk.CTkEntry(marco)
@@ -74,13 +74,13 @@ class AppFutbol(ctk.CTk):
         self.btn_guardar = ctk.CTkButton(marco, text="GUARDAR JUGADOR", height=40, command=self.guardar_datos)
         self.btn_guardar.pack(pady=10, padx=20, fill="x")
 
-        # Radares de validación UX en tiempo real (Roberto)
+        # Radares de validación UX en tiempo real 
         self.ent_apellido.bind("<FocusOut>", self.validar_apellido_realtime)
         self.ent_numero.bind("<FocusOut>", self.validar_numero_realtime)
         self.ent_minutos.bind("<FocusOut>", self.validar_minutos_realtime)
 
     def armar_pestana_consultas(self):
-        # Panel de botones de consulta (Eros / Juan)
+        # Panel de botones de consulta 
         frame_filtros = ctk.CTkFrame(self.tab_consultas, fg_color="transparent")
         frame_filtros.pack(pady=10, fill="x")
 
@@ -95,7 +95,7 @@ class AppFutbol(ctk.CTk):
         self.txt_lista.configure(state="disabled")
 
     def cambiar_posicion(self, seleccion):
-        # Lógica visual para bloquear/desbloquear el campo de goles (Eros)
+        # Lógica visual para bloquear/desbloquear el campo de goles 
         if seleccion == "ARQUERO":
             self.ent_goles.delete(0, 'end')
             self.ent_goles.configure(state="disabled", fg_color="gray30", placeholder_text="No aplica")
@@ -103,7 +103,7 @@ class AppFutbol(ctk.CTk):
             self.ent_goles.configure(state="normal", fg_color=["#F9F9FA", "#343638"], placeholder_text="")
 
     def limpiar_formulario(self):
-        # Vaciamos cajas y devolvemos el cursor al inicio (Juan / Roberto)
+        # Vaciamos cajas y devolvemos el cursor al inicio 
         self.ent_apellido.delete(0, 'end')
         self.ent_numero.delete(0, 'end')
         self.ent_minutos.delete(0, 'end')
@@ -113,7 +113,7 @@ class AppFutbol(ctk.CTk):
         self.ent_apellido.focus()
 
     def guardar_datos(self):
-        # Lógica central de instanciación y control de errores (Juan)
+        # Lógica central de instanciación y control de errores 
         try:
             if not self.ent_apellido.get().strip() or not self.ent_numero.get().strip() or not self.ent_minutos.get().strip():
                  raise ValueError("Debe completar apellido, número y minutos.")
@@ -147,7 +147,7 @@ class AppFutbol(ctk.CTk):
             messagebox.showerror("Error", f"Ocurrió un problema: {e}")
 
     def actualizar_lista(self, filtro="TODOS"):
-        # Motor de filtrado y visualización (Juan / Roberto)
+        # Motor de filtrado y visualización 
         self.txt_lista.configure(state="normal") 
         self.txt_lista.delete("1.0", "end")
         
@@ -178,7 +178,7 @@ class AppFutbol(ctk.CTk):
         self.txt_lista.configure(state="disabled") 
 
     # ==========================================
-    # VALIDACIONES EN TIEMPO REAL (Roberto)
+    # VALIDACIONES EN TIEMPO REAL 
     # ==========================================
     # Estas funciones capturan el evento <FocusOut> de Tkinter.
 
