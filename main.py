@@ -231,3 +231,60 @@ class AppFutbol(ctk.CTk):
             
             if filtro == "GOLEADORES" and (not hasattr(j, 'goles') or j.goles == 0): continue
 
+# --- NUEVA LÓGICA: JUGADORES SIN GOLES ---
+            # Si tocamos el botón "Sin Goles", verificamos: ¿el objeto tiene la capacidad de hacer goles? 
+            # Y si la tiene, ¿marcó más de cero? Si cumple ambas, hacemos un "continue" para saltarlo.
+            if filtro == "SIN_GOLES" and hasattr(j, 'goles') and j.goles > 0: continue
+
+            # Armamos el renglón. Usamos ljust() y rjust() para rellenar con espacios y zfill() para los ceros de la camiseta.
+            # Así logramos que la consola quede alineada como en una tabla, sin importar el largo del apellido.
+            info = f"• {j.apellido.ljust(12)} | Cam: {str(j.numero_camiseta).zfill(2)} | Min: {str(j.minutos_jugados).rjust(3)} | Pos: {j.posicion.ljust(12)}"
+            
+            # Solo intentamos mostrar los goles si el jugador no es arquero (evitamos que el programa crashee).
+            if hasattr(j, 'goles'):
+                info += f" | Goles: {j.goles}"
+                
+            self.txt_lista.insert("end", info + "\n")
+            
+        # Volvemos a bloquear el cuadro de texto para que el usuario solo pueda leer, no borrar a mano.
+        self.txt_lista.configure(state="disabled") 
+
+    # ==========================================
+    # VALIDACIONES EN TIEMPO REAL (UX)
+    # ==========================================
+    # Estas funciones reciben el 'event' porque Tkinter las dispara automáticamente 
+    # cuando el usuario saca el cursor de la cajita (el evento <FocusOut>).
+
+    def validar_apellido_realtime(self, event):
+        texto = self.ent_apellido.get().strip()
+        # any() revisa letra por letra. Si detecta que alguna es un número (isdigit), tiramos el aviso.
+        if texto and any(char.isdigit() for char in texto):
+            messagebox.showwarning("Error", "El apellido no lleva números.")
+            self.ent_apellido.delete(0, 'end')
+            # Usamos after(10) con un mini retraso en milisegundos para forzar al cursor a volver sin que falle Tkinter.
+            self.after(10, self.ent_apellido.focus)
+
+    def validar_numero_realtime(self, event):
+        texto = self.ent_numero.get().strip()
+        # Acá isdigit() asegura que TODO el bloque de texto sean números.
+        if texto and not texto.isdigit():
+            messagebox.showwarning("Error", "La camiseta solo lleva números.")
+            self.ent_numero.delete(0, 'end')
+            self.after(10, self.ent_numero.focus)
+
+    def validar_minutos_realtime(self, event):
+        texto = self.ent_minutos.get().strip()
+        if texto:
+            try: 
+                # Intentamos convertir a float por si el DT carga minutos con decimales (ej: 45.5).
+                float(texto)
+            except ValueError:
+                # Si el try falla (ValueError), es porque metieron texto en lugar de números.
+                messagebox.showwarning("Error", "Los minutos deben ser numéricos.")
+                self.ent_minutos.delete(0, 'end')
+                self.after(10, self.ent_minutos.focus)
+
+# Bloque principal que arranca la aplicación si ejecutamos este archivo directamente.
+if __name__ == "__main__":
+    app = AppFutbol()
+    app.mainloop()
