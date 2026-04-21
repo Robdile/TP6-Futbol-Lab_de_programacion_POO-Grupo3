@@ -1,6 +1,6 @@
-import customtkinter as ctk
-from tkinter import messagebox
-from clases import Arquero, JugadorCampo
+import customtkinter as ctk # Importamos la librería de interfaz gráfica. "ctk" es un alias para su uso.
+from tkinter import messagebox # De la librería base de tkinter, importamos el modulo de cuadros para diálogos.
+from clases import Arquero, JugadorCampo # Importamos las las plantillas desde el archivo "clases.py".
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -74,7 +74,7 @@ class AppFutbol(ctk.CTk):
         self.btn_guardar = ctk.CTkButton(marco, text="GUARDAR JUGADOR", height=40, command=self.guardar_datos)
         self.btn_guardar.pack(pady=10, padx=20, fill="x")
 
-        # Radares de validación UX en tiempo real 
+        # Validación UX en tiempo real 
         self.ent_apellido.bind("<FocusOut>", self.validar_apellido_realtime)
         self.ent_numero.bind("<FocusOut>", self.validar_numero_realtime)
         self.ent_minutos.bind("<FocusOut>", self.validar_minutos_realtime)
@@ -96,12 +96,13 @@ class AppFutbol(ctk.CTk):
 
     def cambiar_posicion(self, seleccion):
         # Lógica visual para bloquear/desbloquear el campo de goles 
-        if seleccion == "ARQUERO":
+        if seleccion == "ARQUERO": # Si es arquero, bloquea la opcion de cargar goles.
             self.ent_goles.delete(0, 'end')
             self.ent_goles.configure(state="disabled", fg_color="gray30", placeholder_text="No aplica")
-        else:
+        else:   # Si es jugador de campo, habiltia la carga de goles.
             self.ent_goles.configure(state="normal", fg_color=["#F9F9FA", "#343638"], placeholder_text="")
 
+    # Función que limpia la interfaz después de guardar un jugador.
     def limpiar_formulario(self):
         # Vaciamos cajas y devolvemos el cursor al inicio 
         self.ent_apellido.delete(0, 'end')
@@ -124,7 +125,7 @@ class AppFutbol(ctk.CTk):
             pos = self.combo_posicion.get()
 
             # Evitamos duplicados de camiseta
-            for jugador in self.equipo:
+            for jugador in self.equipo: # Itera sobre la lista del equipo para comparar el numero ingresado con los ya cargados.
                 if jugador.numero_camiseta == num:
                     raise ValueError(f"La camiseta {num} ya la tiene {jugador.apellido}.")
             
@@ -145,6 +146,7 @@ class AppFutbol(ctk.CTk):
             messagebox.showerror("Error de Datos", str(e))
         except Exception as e:
             messagebox.showerror("Error", f"Ocurrió un problema: {e}")
+
 
     def actualizar_lista(self, filtro="TODOS"):
         # Motor de filtrado y visualización 
@@ -203,8 +205,15 @@ class AppFutbol(ctk.CTk):
         if texto:
             try: 
                 # Intentamos convertir a float (permite decimales como 45.5)
-                float(texto)
-            except ValueError:
+                valor = float(texto)
+                # Los minutos no deben deben ser < 0.
+                messagebox.showwarning("Error", "Los minutos no pueden ser negativos.")
+                    # Se limpia el campo para corregir el error.
+                self.ent_minutos.delete(0, 'end')
+                self.after(10, self.ent_minutos.focus) 
+                    # Usamos return para que no siga ejecutando código extra.
+                return
+            except ValueError: 
                 messagebox.showwarning("Error", "Los minutos deben ser numéricos.")
                 self.ent_minutos.delete(0, 'end')
                 self.after(10, self.ent_minutos.focus)
