@@ -103,3 +103,49 @@ class AppFutbol(ctk.CTk):
         self.armar_pestana_carga()      #modula
         self.armar_pestana_consultas()
 
+        
+# Forzamos el estado inicial para que el campo "Goles" nazca bloqueado (regla del Arquero).
+        self.cambiar_posicion("ARQUERO")
+
+    def armar_pestana_carga(self):
+        # Contenedor principal de la pestaña que se expande para ocupar todo el espacio disponible.
+        marco = ctk.CTkFrame(self.tab_carga)
+        marco.pack(pady=20, padx=20, fill="both", expand=True)
+
+        ctk.CTkLabel(marco, text="REGISTRO DE JUGADOR", font=("Arial", 18, "bold")).pack(pady=15)
+
+        # Cajas de texto (Entries) con etiquetas alineadas a la izquierda (anchor="w").
+        ctk.CTkLabel(marco, text="Apellido del Jugador:", font=("Arial", 12)).pack(anchor="w", padx=25)
+        self.ent_apellido = ctk.CTkEntry(marco)
+        self.ent_apellido.pack(pady=(0, 15), padx=20, fill="x")
+
+        ctk.CTkLabel(marco, text="Número de Camiseta:", font=("Arial", 12)).pack(anchor="w", padx=25)
+        self.ent_numero = ctk.CTkEntry(marco)
+        self.ent_numero.pack(pady=(0, 15), padx=20, fill="x")
+
+        ctk.CTkLabel(marco, text="Minutos Jugados:", font=("Arial", 12)).pack(anchor="w", padx=25)
+        self.ent_minutos = ctk.CTkEntry(marco)
+        self.ent_minutos.pack(pady=(0, 15), padx=20, fill="x")
+
+        # Menú desplegable: restringe la entrada de datos (evita errores de tipeo) y dispara la función de bloqueo de goles.
+        ctk.CTkLabel(marco, text="Posición en Campo:", font=("Arial", 12)).pack(anchor="w", padx=25)
+        self.combo_posicion = ctk.CTkOptionMenu(
+            marco, 
+            values=["ARQUERO", "DEFENSA", "MEDIOCAMPISTA", "DELANTERO"],
+            command=self.cambiar_posicion
+        )
+        self.combo_posicion.pack(pady=(0, 15), padx=20, fill="x")
+
+        # Campo de goles (su estado activo/inactivo depende del OptionMenu superior).
+        ctk.CTkLabel(marco, text="Goles Marcados:", font=("Arial", 12)).pack(anchor="w", padx=25)
+        self.ent_goles = ctk.CTkEntry(marco)
+        self.ent_goles.pack(pady=(0, 25), padx=20, fill="x")
+
+        # Botón de acción principal: conecta la interfaz con la lógica de instanciación y guardado.
+        self.btn_guardar = ctk.CTkButton(marco, text="GUARDAR JUGADOR", height=40, command=self.guardar_datos)
+        self.btn_guardar.pack(pady=10, padx=20, fill="x")
+
+        # Radares de validación UX en tiempo real (se activan al salir del cuadro de texto con el cursor o Tab).
+        self.ent_apellido.bind("<FocusOut>", self.validar_apellido_realtime)
+        self.ent_numero.bind("<FocusOut>", self.validar_numero_realtime)
+        self.ent_minutos.bind("<FocusOut>", self.validar_minutos_realtime)
