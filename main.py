@@ -1,6 +1,6 @@
 import customtkinter as ctk # Importamos la librería de interfaz gráfica. "ctk" es un alias para su uso.
 from tkinter import messagebox # De la librería base de tkinter, importamos el modulo de cuadros para diálogos.
-from clases import Arquero, JugadorCampo # Importamos las las plantillas desde el archivo "clases.py".
+from clases import Arquero, JugadorCampo # Importamos las plantillas desde el archivo "clases.py".
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
