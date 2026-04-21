@@ -136,26 +136,46 @@ class AppFutbol(ctk.CTk):
         for j in self.equipo:
             if filtro == "ARQUEROS" and not isinstance(j, Arquero): continue
             if filtro == "GOLEADORES" and (not hasattr(j, 'goles') or j.goles == 0): continue
+
+
+            # --- NUEVA LÓGICA: JUGADORES SIN GOLES ---
+            # Si el filtro es "SIN_GOLES" le preguntamos al objeto: 
+            # 1. ¿Tenés la capacidad de hacer goles? (hasattr)
+            # 2. Si la tenés, ¿tu cantidad de goles es mayor a cero?
+            # Si ambas son verdaderas, usamos "continue" para saltarlo y que no aparezca en la lista.
             if filtro == "SIN_GOLES" and hasattr(j, 'goles') and j.goles > 0: continue
 
+            # Armamos el texto del renglón. 
+            # Usamos ljust() para rellenar con espacios y zfill() para poner ceros a la izquierda.
+            # Así logramos que la lista quede parejita como una tabla de Excel, sin importar el largo del apellido.
             info = f"• {j.apellido.ljust(12)} | Cam: {str(j.numero_camiseta).zfill(2)} | Min: {str(j.minutos_jugados).rjust(3)} | Pos: {j.posicion.ljust(12)}"
             
+            # Solo le agregamos el texto "Goles: X" si el jugador no es un Arquero.
             if hasattr(j, 'goles'):
                 info += f" | Goles: {j.goles}"
                 
             self.txt_lista.insert("end", info + "\n")
-            
+
+        # Volvemos a cerrar el candado del cuadro de texto para que sea de solo lectura.    
         self.txt_lista.configure(state="disabled") 
+
+    # ==========================================
+    # VALIDACIONES EN TIEMPO REAL (UX)
+    # ==========================================
+    # Estas funciones reciben el parámetro "event" porque Tkinter se los manda automáticamente
+    # cuando detecta que el usuario sacó el cursor de la caja de texto (<FocusOut>).
 
     def validar_apellido_realtime(self, event):
         texto = self.ent_apellido.get().strip()
         if texto and any(char.isdigit() for char in texto):
             messagebox.showwarning("Error", "El apellido no lleva números.")
             self.ent_apellido.delete(0, 'end')
+            # Obligamos al cursor a volver a la caja del apellido (con 10 milisegundos de retraso para que no falle).
             self.after(10, self.ent_apellido.focus)
 
     def validar_numero_realtime(self, event):
         texto = self.ent_numero.get().strip()
+        # isdigit() se asegura de que absolutamente todo lo ingresado sean números.
         if texto and not texto.isdigit():
             messagebox.showwarning("Error", "La camiseta solo lleva números.")
             self.ent_numero.delete(0, 'end')
@@ -165,11 +185,15 @@ class AppFutbol(ctk.CTk):
         texto = self.ent_minutos.get().strip()
         if texto:
             try: float(texto)
+            # Intentamos convertirlo a float (por si jugó medio tiempo, ej: 45.5).
             except ValueError:
-                messagebox.showwarning("Error", "Los minutos deben ser numéricos.")
+            # Si Python tira error al convertir, es porque el usuario metió letras.  
+                  messagebox.showwarning("Error", "Los minutos deben ser numéricos.")
                 self.ent_minutos.delete(0, 'end')
                 self.after(10, self.ent_minutos.focus)
 
+# Este bloque es el "botón de encendido" del programa. 
+# Solo ejecuta la aplicación si abrimos este archivo directamente.
 if __name__ == "__main__":
     app = AppFutbol()
-    app.mainloop()
+    app.mainloop() # mainloop() mantiene la ventana gráfica abierta esperando a que el usuario haga algo.
