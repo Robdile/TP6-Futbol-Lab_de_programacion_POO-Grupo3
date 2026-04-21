@@ -175,3 +175,59 @@ class AppFutbol(ctk.CTk):
             self.ent_goles.configure(state="disabled", fg_color="gray30", placeholder_text="No aplica")
         else: 
             self.ent_goles.configure(state="normal", fg_color=["#F9F9FA", "#343638"], placeholder_text="")
+
+    def limpiar_formulario(self):    #funcion para limpiar pantalla luego de cargar un jugador
+        self.ent_apellido.delete(0, 'end')
+        self.ent_numero.delete(0, 'end')
+        self.ent_minutos.delete(0, 'end')
+        self.ent_goles.delete(0, 'end')
+        self.combo_posicion.set("ARQUERO")
+        self.cambiar_posicion("ARQUERO")
+        self.ent_apellido.focus()
+
+    def guardar_datos(self):  #Funcion que valida que todo los campos esten llenos antes de guardar un nuevo jugador
+        try:
+            if not self.ent_apellido.get().strip() or not self.ent_numero.get().strip() or not self.ent_minutos.get().strip():
+                 raise ValueError("Debe completar apellido, número y minutos.")
+
+            ape = self.ent_apellido.get()
+            num = int(self.ent_numero.get())
+            minu = float(self.ent_minutos.get() or 0)
+            pos = self.combo_posicion.get()
+
+            for jugador in self.equipo:    #funcion para no duplicar un numero de camiseta
+                if jugador.numero_camiseta == num:
+                    raise ValueError(f"La camiseta {num} ya la tiene {jugador.apellido}.")
+            
+            if pos == "ARQUERO":
+                nuevo_jugador = Arquero(ape, num, minu)
+            else:
+                goles_str = self.ent_goles.get().strip()
+                goles = int(goles_str) if goles_str else 0
+                nuevo_jugador = JugadorCampo(ape, num, pos, goles, minu)
+
+            self.equipo.append(nuevo_jugador)
+            self.actualizar_lista()
+            self.limpiar_formulario()
+            messagebox.showinfo("Éxito", f"Jugador {ape} guardado.")
+            
+        except ValueError as e:
+            messagebox.showerror("Error de Datos", str(e))
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un problema: {e}")
+
+    def actualizar_lista(self, filtro="TODOS"):   #imprime a los jugadores cargados en la pantalla
+        self.txt_lista.configure(state="normal") 
+        self.txt_lista.delete("1.0", "end")
+        
+        if not self.equipo:
+            self.txt_lista.insert("end", "Sin jugadores cargados.\n")
+            self.txt_lista.configure(state="disabled")
+            return
+
+        for j in self.equipo:
+            # LÓGICA DE FILTRADO
+            if filtro == "ARQUEROS" and not isinstance(j, Arquero): continue
+            
+            if filtro == "GOLEADORES" and (not hasattr(j, 'goles') or j.goles == 0): continue
+
