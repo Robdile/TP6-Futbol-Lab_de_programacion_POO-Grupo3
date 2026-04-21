@@ -149,3 +149,29 @@ class AppFutbol(ctk.CTk):
         self.ent_apellido.bind("<FocusOut>", self.validar_apellido_realtime)
         self.ent_numero.bind("<FocusOut>", self.validar_numero_realtime)
         self.ent_minutos.bind("<FocusOut>", self.validar_minutos_realtime)
+
+        def armar_pestana_consultas(self):
+        # Panel de botones de consulta, con frame contenedor para organizar visualmente los filtros.
+            frame_filtros = ctk.CTkFrame(self.tab_consultas, fg_color="transparent")
+            frame_filtros.pack(pady=10, fill="x")
+        
+        # Botones de filtro: cada uno dispara la función de actualización de la lista con un criterio específico.
+        # Usamos 'lambda' para poder pasarle un parámetro a la función 'actualizar_lista' sin ejecutarla inmediatamente.
+            ctk.CTkButton(frame_filtros, text="Plantel Completo", command=lambda: self.actualizar_lista("TODOS")).pack(side="left", padx=5, expand=True)
+            ctk.CTkButton(frame_filtros, text="Solo Arqueros", command=lambda: self.actualizar_lista("ARQUEROS")).pack(side="left", padx=5, expand=True)
+            ctk.CTkButton(frame_filtros, text="Con Goles", command=lambda: self.actualizar_lista("GOLEADORES")).pack(side="left", padx=5, expand=True)
+        # --- NUEVA OPCIÓN SOLICITADA ---
+            ctk.CTkButton(frame_filtros, text="Sin Goles", command=lambda: self.actualizar_lista("SIN_GOLES")).pack(side="left", padx=5, expand=True)
+
+        self.txt_lista = ctk.CTkTextbox(self.tab_consultas, font=("Courier New", 13))
+        self.txt_lista.pack(pady=10, padx=10, fill="both", expand=True)
+        self.txt_lista.configure(state="disabled")
+
+        """Este método se ejecuta cada vez que el usuario cambia el valor del menú desplegable.
+        Adapta la interfaz visualmente para evitar el ingreso de datos erroneos."""
+    def cambiar_posicion(self, seleccion):
+        if seleccion == "ARQUERO": # Si se selecciona "ARQUERO", se bloquea el campo de goles para evitar que se carguen datos.
+            self.ent_goles.delete(0, 'end')
+            self.ent_goles.configure(state="disabled", fg_color="gray30", placeholder_text="No aplica")
+        else: 
+            self.ent_goles.configure(state="normal", fg_color=["#F9F9FA", "#343638"], placeholder_text="")
