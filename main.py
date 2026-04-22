@@ -207,12 +207,13 @@ class AppFutbol(ctk.CTk):
                 # Intentamos convertir a float (permite decimales como 45.5)
                 valor = float(texto)
                 # Los minutos no deben deben ser < 0.
-                messagebox.showwarning("Error", "Los minutos no pueden ser negativos.")
+                if valor < 0:
+                    messagebox.showwarning("Error", "Los minutos no pueden ser negativos.")
                     # Se limpia el campo para corregir el error.
-                self.ent_minutos.delete(0, 'end')
-                self.after(10, self.ent_minutos.focus) 
+                    self.ent_minutos.delete(0, 'end')
+                    self.after(10, self.ent_minutos.focus) 
                     # Usamos return para que no siga ejecutando código extra.
-                return
+                    return
             except ValueError: 
                 messagebox.showwarning("Error", "Los minutos deben ser numéricos.")
                 self.ent_minutos.delete(0, 'end')
