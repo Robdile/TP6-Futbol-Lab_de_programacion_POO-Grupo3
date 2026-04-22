@@ -6,22 +6,22 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
 class AppFutbol(ctk.CTk):
-    def __init__(self):
+    def __init__(self):   #Inicializamos la clase padre (CTk)
         super().__init__()
 
-        self.title("Sistema de Estadísticas - Grupo 3 UNSADA")
+        self.title("Sistema de Estadísticas - Grupo 3 UNSADA") #Configuramos la estetica
         self.geometry("950x750")
         
-        self.equipo = []
+        self.equipo = []   #Estructura de datos principal para almacenar los jugadores 
 
         # --- MENÚ PRINCIPAL CON PESTAÑAS ---
-        self.menu_tabs = ctk.CTkTabview(self)
+        self.menu_tabs = ctk.CTkTabview(self)   #Contenedor de Pestañas para la interfaz
         self.menu_tabs.pack(fill="both", expand=True, padx=20, pady=20)
 
-        self.tab_carga = self.menu_tabs.add("Carga de Datos")
+        self.tab_carga = self.menu_tabs.add("Carga de Datos") #Se añaden las dos secciones principales
         self.tab_consultas = self.menu_tabs.add("Consultas")
 
-        self.armar_pestana_carga()
+        self.armar_pestana_carga()              # se llaman a metodos internos para imprimir las pestañas
         self.armar_pestana_consultas()
         
         # Estado inicial seguro 
@@ -42,7 +42,7 @@ class AppFutbol(ctk.CTk):
         # Usamos anchor="w" (West/Oeste) para alinear a la izquierda y fill="x" para expandir la caja.
         ctk.CTkLabel(marco, text="Apellido del Jugador:", font=("Arial", 12)).pack(anchor="w", padx=25)
         self.ent_apellido = ctk.CTkEntry(marco)
-        self.ent_apellido.pack(pady=(0, 15), padx=20, fill="x")
+        self.ent_apellido.pack(pady=(0, 15), padx=20, fill="x") # 'fill="x"' hace que la caja de texto se estire horizontalmente
 
         # --- NÚMERO DE CAMISETA ---
         ctk.CTkLabel(marco, text="Número de Camiseta:", font=("Arial", 12)).pack(anchor="w", padx=25)
@@ -71,34 +71,48 @@ class AppFutbol(ctk.CTk):
         self.ent_goles = ctk.CTkEntry(marco)
         self.ent_goles.pack(pady=(0, 25), padx=20, fill="x")
 
+        # Al hacer clic, se dispara el método 'guardar_datos' para procesar la info
         self.btn_guardar = ctk.CTkButton(marco, text="GUARDAR JUGADOR", height=40, command=self.guardar_datos)
         self.btn_guardar.pack(pady=10, padx=20, fill="x")
 
         # Validación UX en tiempo real 
+        # '.bind("<FocusOut>", ...)' detecta cuando el usuario hace clic fuera de la caja de texto.
+        # Esto permite validar si lo que escribió es correcto sin esperar a que presione "Guardar".
         self.ent_apellido.bind("<FocusOut>", self.validar_apellido_realtime)
         self.ent_numero.bind("<FocusOut>", self.validar_numero_realtime)
         self.ent_minutos.bind("<FocusOut>", self.validar_minutos_realtime)
+
+    #SEGUNDA PESTAÑA DONDE SE FILTRAN LAS CONSULTAS
 
     def armar_pestana_consultas(self):
         # Panel de botones de consulta 
         frame_filtros = ctk.CTkFrame(self.tab_consultas, fg_color="transparent")
         frame_filtros.pack(pady=10, fill="x")
 
+        # Botones de filtrado:
+        # Usamos 'lambda' para que la función actualizar_lista no se ejecute sola al iniciar la app,
+        # sino que espere a que el usuario haga clic enviando un parámetro específico.
+
         ctk.CTkButton(frame_filtros, text="Plantel Completo", command=lambda: self.actualizar_lista("TODOS")).pack(side="left", padx=5, expand=True)
         ctk.CTkButton(frame_filtros, text="Solo Arqueros", command=lambda: self.actualizar_lista("ARQUEROS")).pack(side="left", padx=5, expand=True)
         ctk.CTkButton(frame_filtros, text="Con Goles", command=lambda: self.actualizar_lista("GOLEADORES")).pack(side="left", padx=5, expand=True)
-        # Nueva opción solicitada
         ctk.CTkButton(frame_filtros, text="Sin Goles", command=lambda: self.actualizar_lista("SIN_GOLES")).pack(side="left", padx=5, expand=True)
-
+       
+        # Caja de texto grande para mostrar la lista de jugadores procesada.
+        # Usamos 'Courier New' porque es una fuente monoespaciada
         self.txt_lista = ctk.CTkTextbox(self.tab_consultas, font=("Courier New", 13))
         self.txt_lista.pack(pady=10, padx=10, fill="both", expand=True)
+
+        # Bloqueamos la edición del texto para que el usuario no pueda borrar los resultados a mano.
         self.txt_lista.configure(state="disabled")
 
     def cambiar_posicion(self, seleccion):
         # Lógica visual para bloquear/desbloquear el campo de goles 
         if seleccion == "ARQUERO": # Si es arquero, bloquea la opcion de cargar goles.
             self.ent_goles.delete(0, 'end')
-            self.ent_goles.configure(state="disabled", fg_color="gray30", placeholder_text="No aplica")
+            self.ent_goles.configure(
+                state="disabled", fg_color="gray30", placeholder_text="No aplica"
+                )
         else:   # Si es jugador de campo, habiltia la carga de goles.
             self.ent_goles.configure(state="normal", fg_color=["#F9F9FA", "#343638"], placeholder_text="")
 
@@ -115,9 +129,10 @@ class AppFutbol(ctk.CTk):
 
     def guardar_datos(self):
         # Lógica central de instanciación y control de errores 
+        # Usamos un bloque try-except para atrapar cualquier error y que la app no se cierre sola
         try:
-            if not self.ent_apellido.get().strip() or not self.ent_numero.get().strip() or not self.ent_minutos.get().strip():
-                 raise ValueError("Debe completar apellido, número y minutos.")
+            if not self.ent_apellido.get().strip() or not self.ent_numero.get().strip() or not self.ent_minutos.get().strip(): #elimina espacios en blanco innecesarios
+                 raise ValueError("Debe completar apellido, número y minutos.")  # Si falta algo, 'lanzamos' un error manualmente
 
             ape = self.ent_apellido.get()
             num = int(self.ent_numero.get())
